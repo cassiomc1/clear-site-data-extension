@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Limpar Dados do Site",
+  "version": "1.0",
+  "description": "Limpa todos os dados do site da aba selecionada (cookies, cache, localStorage, etc.)",
+  "permissions": [
+    "activeTab",
+    "browsingData"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Limpar Dados do Site"
+  }
+}

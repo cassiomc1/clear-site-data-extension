@@ -38,24 +38,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     status.className = 'status';
     clearBtn.disabled = true;
 
-    const dataToRemove = {};
+    // Apenas tipos de dados suportados pelo filtro 'origins' do chrome.browsingData.
+    // O tipo global 'cache' (cache HTTP do navegador inteiro) não aceita filtro por
+    // origem e lançaria erro, por isso usamos 'cacheStorage' (escopo por site).
+    const dataToRemove = {
+      cookies: document.getElementById('cookies').checked,
+      cacheStorage: document.getElementById('cacheStorage').checked,
+      localStorage: document.getElementById('localStorage').checked,
+      serviceWorkers: document.getElementById('serviceWorkers').checked,
+      indexedDB: document.getElementById('indexedDB').checked,
+    };
 
-    if (document.getElementById('cookies').checked) {
-      dataToRemove.cookies = true;
-    }
-    if (document.getElementById('cache').checked) {
-      dataToRemove.cache = true;
-      dataToRemove.cacheStorage = true;
-    }
-    if (document.getElementById('localStorage').checked) {
-      dataToRemove.localStorage = true;
-    }
-    if (document.getElementById('sessionStorage').checked) {
-      // Session storage é limpo ao limpar service workers e recarregar
-      dataToRemove.serviceWorkers = true;
-    }
-    if (document.getElementById('indexedDB').checked) {
-      dataToRemove.indexedDB = true;
+    if (!Object.values(dataToRemove).some(Boolean)) {
+      status.textContent = 'Selecione ao menos um tipo de dado.';
+      status.className = 'status error';
+      clearBtn.disabled = false;
+      return;
     }
 
     try {

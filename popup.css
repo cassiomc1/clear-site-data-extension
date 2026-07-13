@@ -5,7 +5,7 @@
 }
 
 body {
-  width: 320px;
+  width: 340px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #1a1a2e;
   color: #eee;
@@ -18,7 +18,7 @@ body {
 h1 {
   font-size: 18px;
   margin-bottom: 10px;
-  color: #e94560;
+  color: #ff7089;
   text-align: center;
 }
 
@@ -34,7 +34,16 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 15px;
+  margin: 0 0 10px;
+  padding: 12px;
+  border: 1px solid #41415a;
+  border-radius: 8px;
+}
+
+.options legend {
+  padding: 0 5px;
+  color: #d4d4df;
+  font-size: 12px;
 }
 
 .options label {
@@ -58,10 +67,17 @@ h1 {
   accent-color: #e94560;
 }
 
+.cookie-note {
+  margin-bottom: 14px;
+  color: #b8b8c8;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
 .clear-btn {
   width: 100%;
   padding: 12px;
-  background: #e94560;
+  background: #b82342;
   color: white;
   border: none;
   border-radius: 6px;
@@ -72,7 +88,13 @@ h1 {
 }
 
 .clear-btn:hover {
-  background: #c73659;
+  background: #9f1f39;
+}
+
+.clear-btn:focus-visible,
+.options input:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .clear-btn:disabled {
@@ -92,5 +114,5 @@ h1 {
 }
 
 .status.error {
-  color: #e94560;
+  color: #ff7089;
 }

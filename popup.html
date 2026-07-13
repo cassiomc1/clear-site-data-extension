@@ -2,24 +2,30 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Limpar Dados do Site</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="container">
+  <main class="container">
     <h1>Limpar Dados do Site</h1>
-    <p class="site-info" id="siteInfo">Carregando...</p>
+    <p class="site-info" id="siteInfo" aria-live="polite">Carregando...</p>
 
-    <div class="options">
+    <fieldset class="options">
+      <legend>Dados que serão removidos</legend>
       <label><input type="checkbox" id="cookies" checked> Cookies</label>
+      <label><input type="checkbox" id="cache" checked> Cache do navegador</label>
       <label><input type="checkbox" id="cacheStorage" checked> Cache Storage</label>
       <label><input type="checkbox" id="localStorage" checked> Local Storage</label>
       <label><input type="checkbox" id="serviceWorkers" checked> Service Workers</label>
       <label><input type="checkbox" id="indexedDB" checked> IndexedDB</label>
-    </div>
+    </fieldset>
 
-    <button id="clearBtn" class="clear-btn">Limpar Dados</button>
-    <div id="status" class="status"></div>
-  </div>
+    <p class="cookie-note">Cookies compartilhados podem ser removidos também de subdomínios relacionados.</p>
+
+    <button type="button" id="clearBtn" class="clear-btn">Limpar dados deste site</button>
+    <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></p>
+  </main>
   <script src="popup.js"></script>
 </body>
 </html>

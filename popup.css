@@ -116,3 +116,7 @@ h1 {
 .status.error {
   color: #ff7089;
 }
+
+.status.warning {
+  color: #f6c177;
+}

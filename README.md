@@ -40,3 +40,12 @@ removido pela extensão; ele é descartado quando a aba é fechada.
 - `browsingData`: remoção dos tipos de dados selecionados.
 
 A extensão requer Chrome 96 ou posterior para usar a interface assíncrona da API.
+
+## Desenvolvimento
+
+Execute a validação local, sem instalar dependências:
+
+```bash
+node --test
+node --check popup.js
+```

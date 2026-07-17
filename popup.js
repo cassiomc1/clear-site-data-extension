@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const origin = url.origin;
 
   siteInfo.textContent = origin;
+  clearBtn.disabled = false;
 
   clearBtn.addEventListener('click', async () => {
     status.textContent = 'Limpando...';
@@ -61,23 +62,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-      await chrome.browsingData.remove(
-        { origins: [origin] },
-        dataToRemove
-      );
-
-      status.textContent = `Dados removidos de ${origin}. Recarregando...`;
-      status.className = 'status success';
-
-      setTimeout(() => {
-        chrome.tabs.reload(tab.id).catch((err) => console.error('Falha ao recarregar a aba:', err));
-        window.close();
-      }, 800);
+      await chrome.browsingData.remove({ origins: [origin] }, dataToRemove);
     } catch (err) {
       console.error('Falha ao remover os dados do site:', err);
       status.textContent = 'Não foi possível remover os dados. Tente novamente.';
       status.className = 'status error';
       clearBtn.disabled = false;
+      return;
+    }
+
+    try {
+      await chrome.tabs.reload(tab.id);
+      status.textContent = `Dados removidos de ${origin}.`;
+      status.className = 'status success';
+    } catch (err) {
+      console.error('Falha ao recarregar a aba:', err);
+      status.textContent = 'Dados removidos, mas não foi possível recarregar a aba.';
+      status.className = 'status warning';
     }
   });
 });

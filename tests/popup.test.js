@@ -6,13 +6,13 @@ const vm = require('node:vm');
 
 const source = readFileSync(join(__dirname, '..', 'popup.js'), 'utf8');
 
-function loadPopup({ url = 'https://app.example.com/page', queryError, removeError } = {}) {
+function loadPopup({ url = 'https://app.example.com/page', queryError, removeError, reloadError } = {}) {
   const elements = Object.fromEntries(
     ['siteInfo', 'clearBtn', 'status', 'cookies', 'cache', 'cacheStorage', 'localStorage', 'serviceWorkers', 'indexedDB']
       .map((id) => [id, {
         id,
         checked: true,
-        disabled: false,
+        disabled: id === 'clearBtn',
         textContent: '',
         className: '',
         addEventListener(event, listener) { this[event] = listener; },
@@ -21,7 +21,6 @@ function loadPopup({ url = 'https://app.example.com/page', queryError, removeErr
   let ready;
   let removal;
   let reloadedTab;
-  let closed = false;
 
   const document = {
     addEventListener(event, listener) { if (event === 'DOMContentLoaded') ready = listener; },
@@ -33,7 +32,10 @@ function loadPopup({ url = 'https://app.example.com/page', queryError, removeErr
         if (queryError) throw queryError;
         return [{ id: 7, url }];
       },
-      reload: async (tabId) => { reloadedTab = tabId; },
+      reload: async (tabId) => {
+        if (reloadError) throw reloadError;
+        reloadedTab = tabId;
+      },
     },
     browsingData: {
       remove: async (options, data) => {
@@ -47,22 +49,22 @@ function loadPopup({ url = 'https://app.example.com/page', queryError, removeErr
     chrome,
     console: { error() {} },
     document,
-    setTimeout: (listener) => listener(),
     URL,
-    window: { close: () => { closed = true; } },
   });
 
   return {
     elements,
     ready: () => ready(),
     click: () => elements.clearBtn.click(),
-    result: () => ({ closed, reloadedTab, removal }),
+    result: () => ({ reloadedTab, removal }),
   };
 }
 
 test('envia a origem ativa e recarrega a aba após a remoção', async () => {
   const popup = loadPopup();
   await popup.ready();
+
+  assert.equal(popup.elements.clearBtn.disabled, false);
   await popup.click();
 
   assert.equal(popup.elements.siteInfo.textContent, 'https://app.example.com');
@@ -78,7 +80,7 @@ test('envia a origem ativa e recarrega a aba após a remoção', async () => {
     },
   });
   assert.equal(popup.result().reloadedTab, 7);
-  assert.equal(popup.result().closed, true);
+  assert.equal(popup.elements.status.textContent, 'Dados removidos de https://app.example.com.');
 });
 
 test('não executa a remoção sem ao menos uma opção selecionada', async () => {
@@ -116,6 +118,16 @@ test('informa a falha de remoção e libera uma nova tentativa', async () => {
   assert.equal(popup.elements.status.textContent, 'Não foi possível remover os dados. Tente novamente.');
   assert.equal(popup.elements.status.className, 'status error');
   assert.equal(popup.elements.clearBtn.disabled, false);
-  assert.equal(popup.result().closed, false);
+  assert.equal(popup.result().reloadedTab, undefined);
+});
+
+test('mantém o resultado visível quando a recarga falha', async () => {
+  const popup = loadPopup({ reloadError: new Error('indisponível') });
+  await popup.ready();
+  await popup.click();
+
+  assert.equal(popup.elements.status.textContent, 'Dados removidos, mas não foi possível recarregar a aba.');
+  assert.equal(popup.elements.status.className, 'status warning');
+  assert.notEqual(popup.result().removal, undefined);
   assert.equal(popup.result().reloadedTab, undefined);
 });

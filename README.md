@@ -4,6 +4,8 @@
 
 Leia o [AGENTS.md](AGENTS.md) para o contrato Manifest V3, os limites de privacidade e a validação.
 
+A [arquitetura técnica](docs/architecture.md) descreve o fluxo do popup e o contrato de remoção de dados por origem.
+
 Extensão Chrome (Manifest V3) que limpa os dados armazenados pelo site da aba ativa
 (cookies, cache HTTP, Cache Storage, Local Storage, Service Workers e IndexedDB).
 

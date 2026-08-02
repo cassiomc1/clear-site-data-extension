@@ -1,5 +1,9 @@
 # Clear Site Data
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Manifest V3](https://img.shields.io/badge/Manifest-V3-green.svg)](manifest.json)
+[![Chrome 96+](https://img.shields.io/badge/Chrome-96%2B-orange.svg)](https://www.google.com/chrome/)
+
 Chrome extension (Manifest V3) that clears the data stored by the site in the active
 tab (cookies, HTTP cache, Cache Storage, Local Storage, Service Workers and IndexedDB).
 
@@ -18,9 +22,10 @@ tab (cookies, HTTP cache, Cache Storage, Local Storage, Service Workers and Inde
 
 ## How to install (developer mode)
 
-1. Go to `chrome://extensions`.
-2. Enable **Developer mode**.
-3. Click **Load unpacked** and select this folder.
+1. Download this repository (or clone it with `git clone https://github.com/cassiomc1/extensao-cookie.git`).
+2. Go to `chrome://extensions`.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the project folder.
 
 ## Notes about the data types
 
@@ -57,6 +62,17 @@ type, since Chrome scans the entire cache filtering by origin; **IndexedDB** fro
 heavy sites can also take a few seconds. Cookies, Local Storage and Cache Storage
 are virtually instant. Uncheck unnecessary types for faster cleanups.
 
+## Project structure
+
+```
+├── manifest.json   # Extension contract (Manifest V3) and permissions
+├── popup.html      # Popup interface
+├── popup.css       # Popup styles
+├── popup.js        # Logic: tab detection, cleanup, progress, i18n and persistence
+├── docs/           # Technical documentation (architecture)
+└── tests/          # Automated tests (Node.js, no dependencies)
+```
+
 ## Development
 
 Run the local validation without installing dependencies:
@@ -65,3 +81,9 @@ Run the local validation without installing dependencies:
 node --test
 node --check popup.js
 ```
+
+Then load the unpacked extension in Chrome and validate a real origin.
+
+## License
+
+Distributed under the [MIT license](LICENSE).

@@ -1,5 +1,9 @@
 # Limpar Dados do Site
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Manifest V3](https://img.shields.io/badge/Manifest-V3-green.svg)](manifest.json)
+[![Chrome 96+](https://img.shields.io/badge/Chrome-96%2B-orange.svg)](https://www.google.com/chrome/)
+
 Extensão Chrome (Manifest V3) que limpa os dados armazenados pelo site da aba ativa
 (cookies, cache HTTP, Cache Storage, Local Storage, Service Workers e IndexedDB).
 
@@ -18,9 +22,10 @@ Extensão Chrome (Manifest V3) que limpa os dados armazenados pelo site da aba a
 
 ## Como instalar (modo desenvolvedor)
 
-1. Acesse `chrome://extensions`.
-2. Ative o **Modo do desenvolvedor**.
-3. Clique em **Carregar sem compactação** e selecione esta pasta.
+1. Baixe este repositório (ou clone com `git clone https://github.com/cassiomc1/extensao-cookie.git`).
+2. Acesse `chrome://extensions`.
+3. Ative o **Modo do desenvolvedor**.
+4. Clique em **Carregar sem compactação** e selecione a pasta do projeto.
 
 ## Observações sobre os tipos de dados
 
@@ -57,6 +62,17 @@ de sites pesados também pode levar alguns segundos. Cookies, Local Storage e
 Cache Storage são praticamente instantâneos. Desmarque os tipos desnecessários para
 limpezas mais rápidas.
 
+## Estrutura do projeto
+
+```
+├── manifest.json   # Contrato da extensão (Manifest V3) e permissões
+├── popup.html      # Interface do popup
+├── popup.css       # Estilos do popup
+├── popup.js        # Lógica: detecção da aba, limpeza, progresso, i18n e persistência
+├── docs/           # Documentação técnica (arquitetura)
+└── tests/          # Testes automatizados (Node.js, sem dependências)
+```
+
 ## Desenvolvimento
 
 Execute a validação local, sem instalar dependências:
@@ -65,3 +81,9 @@ Execute a validação local, sem instalar dependências:
 node --test
 node --check popup.js
 ```
+
+Depois carregue a extensão descompactada no Chrome e valide uma origem real.
+
+## Licença
+
+Distribuída sob a [licença MIT](LICENSE).

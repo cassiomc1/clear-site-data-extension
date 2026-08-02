@@ -9,6 +9,7 @@ tab (cookies, HTTP cache, Cache Storage, Local Storage, Service Workers and Inde
 
 - Automatically detects the origin (`protocol://domain:port`) of the active tab.
 - Lets you choose which data types to clear.
+- **Bilingual interface (PT/EN)**: a button at the top switches the entire popup between Portuguese and English, and the choice is remembered.
 - **Remembers the last selected options** between uses, speeding up repeated cleanups.
 - **Shows detailed cleanup progress** (e.g., "Removing browser cache... (2/6)").
 - Shows the result as soon as the removal finishes, without waiting for the page reload.
@@ -44,7 +45,7 @@ removed by the extension; it is discarded when the tab is closed.
 
 - `activeTab`: temporary access to the tab's URL only when the user opens the extension.
 - `browsingData`: removal of the selected data types.
-- `storage`: locally saves the last checked options to restore them on the next use.
+- `storage`: locally saves the last checked options and the chosen language to restore them on the next use.
 
 The extension requires Chrome 96 or later to use the API's asynchronous interface.
 

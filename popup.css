@@ -15,6 +15,42 @@ body {
   padding: 20px;
 }
 
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.header h1 {
+  margin-bottom: 0;
+}
+
+.lang-btn {
+  position: absolute;
+  right: 0;
+  padding: 4px 8px;
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #41415a;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.lang-btn:hover {
+  color: #fff;
+  border-color: #e94560;
+}
+
+.lang-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 h1 {
   font-size: 18px;
   margin-bottom: 10px;

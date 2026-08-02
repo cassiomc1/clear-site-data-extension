@@ -8,20 +8,23 @@
 </head>
 <body>
   <main class="container">
-    <h1>Limpar Dados do Site</h1>
+    <div class="header">
+      <h1 id="title">Limpar Dados do Site</h1>
+      <button type="button" id="langBtn" class="lang-btn" aria-label="Switch to English">EN</button>
+    </div>
     <p class="site-info" id="siteInfo" aria-live="polite">Carregando...</p>
 
     <fieldset class="options">
-      <legend>Dados que serão removidos</legend>
-      <label><input type="checkbox" id="cookies" checked> Cookies</label>
-      <label><input type="checkbox" id="cache" checked> Cache do navegador</label>
-      <label><input type="checkbox" id="cacheStorage" checked> Cache Storage</label>
-      <label><input type="checkbox" id="localStorage" checked> Local Storage</label>
-      <label><input type="checkbox" id="serviceWorkers" checked> Service Workers</label>
-      <label><input type="checkbox" id="indexedDB" checked> IndexedDB</label>
+      <legend id="optionsLegend">Dados que serão removidos</legend>
+      <label><input type="checkbox" id="cookies" checked> <span id="labelCookies">Cookies</span></label>
+      <label><input type="checkbox" id="cache" checked> <span id="labelCache">Cache do navegador</span></label>
+      <label><input type="checkbox" id="cacheStorage" checked> <span id="labelCacheStorage">Cache Storage</span></label>
+      <label><input type="checkbox" id="localStorage" checked> <span id="labelLocalStorage">Local Storage</span></label>
+      <label><input type="checkbox" id="serviceWorkers" checked> <span id="labelServiceWorkers">Service Workers</span></label>
+      <label><input type="checkbox" id="indexedDB" checked> <span id="labelIndexedDB">IndexedDB</span></label>
     </fieldset>
 
-    <p class="cookie-note">Cookies compartilhados podem ser removidos também de subdomínios relacionados.</p>
+    <p class="cookie-note" id="cookieNote">Cookies compartilhados podem ser removidos também de subdomínios relacionados.</p>
 
     <button type="button" id="clearBtn" class="clear-btn" disabled>Limpar dados deste site</button>
     <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></p>

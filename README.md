@@ -9,6 +9,7 @@ Extensão Chrome (Manifest V3) que limpa os dados armazenados pelo site da aba a
 
 - Detecta automaticamente a origem (`protocolo://domínio:porta`) da aba ativa.
 - Permite escolher quais tipos de dados limpar.
+- **Interface bilíngue (PT/EN)**: botão no topo alterna todo o popup entre português e inglês, e a escolha é lembrada.
 - **Lembra as últimas opções selecionadas** entre usos, agilizando limpezas repetidas.
 - **Exibe o progresso detalhado** da limpeza (ex.: "Removendo cache do navegador... (2/6)").
 - Mostra o resultado assim que a remoção termina, sem esperar a recarga da página.
@@ -43,7 +44,7 @@ removido pela extensão; ele é descartado quando a aba é fechada.
 
 - `activeTab`: acesso temporário à URL da aba somente quando o usuário abre a extensão.
 - `browsingData`: remoção dos tipos de dados selecionados.
-- `storage`: salva localmente as últimas opções marcadas para restaurá-las no próximo uso.
+- `storage`: salva localmente as últimas opções marcadas e o idioma escolhido para restaurá-los no próximo uso.
 
 A extensão requer Chrome 96 ou posterior para usar a interface assíncrona da API.
 

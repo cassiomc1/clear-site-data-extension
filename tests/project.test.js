@@ -27,6 +27,16 @@ test('mantém o contrato entre manifesto, popup e JavaScript', () => {
     'localStorage',
     'serviceWorkers',
     'indexedDB',
+    'langBtn',
+    'title',
+    'optionsLegend',
+    'cookieNote',
+    'labelCookies',
+    'labelCache',
+    'labelCacheStorage',
+    'labelLocalStorage',
+    'labelServiceWorkers',
+    'labelIndexedDB',
   ]) {
     assert.equal(popup.match(new RegExp(`id="${id}"`, 'g'))?.length, 1, `id ausente ou duplicado: ${id}`);
   }

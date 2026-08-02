@@ -6,24 +6,35 @@ const vm = require('node:vm');
 
 const source = readFileSync(join(__dirname, '..', 'popup.js'), 'utf8');
 
-function loadPopup({ url = 'https://app.example.com/page', queryError, removeError, reloadError, savedOptions } = {}) {
+const ELEMENT_IDS = [
+  'siteInfo', 'clearBtn', 'status',
+  'cookies', 'cache', 'cacheStorage', 'localStorage', 'serviceWorkers', 'indexedDB',
+  'langBtn', 'title', 'optionsLegend', 'cookieNote',
+  'labelCookies', 'labelCache', 'labelCacheStorage', 'labelLocalStorage', 'labelServiceWorkers', 'labelIndexedDB',
+];
+
+function loadPopup({ url = 'https://app.example.com/page', queryError, removeError, reloadError, savedOptions, savedLanguage } = {}) {
   const elements = Object.fromEntries(
-    ['siteInfo', 'clearBtn', 'status', 'cookies', 'cache', 'cacheStorage', 'localStorage', 'serviceWorkers', 'indexedDB']
+    ELEMENT_IDS
       .map((id) => [id, {
         id,
         checked: true,
         disabled: id === 'clearBtn',
         textContent: '',
         className: '',
+        attributes: {},
+        setAttribute(name, value) { this.attributes[name] = value; },
         addEventListener(event, listener) { this[event] = listener; },
       }]),
   );
   let ready;
   const removals = [];
   let reloadedTab;
-  let stored;
+  const storedValues = {};
 
   const document = {
+    documentElement: { lang: '' },
+    title: '',
     addEventListener(event, listener) { if (event === 'DOMContentLoaded') ready = listener; },
     getElementById(id) { return elements[id]; },
   };
@@ -46,8 +57,12 @@ function loadPopup({ url = 'https://app.example.com/page', queryError, removeErr
     },
     storage: {
       local: {
-        get: async (key) => (savedOptions ? { [key]: savedOptions } : {}),
-        set: async (value) => { stored = value; },
+        get: async (key) => {
+          if (key === 'selectedOptions' && savedOptions) return { selectedOptions: savedOptions };
+          if (key === 'language' && savedLanguage) return { language: savedLanguage };
+          return {};
+        },
+        set: async (value) => { Object.assign(storedValues, value); },
       },
     },
   };
@@ -61,9 +76,11 @@ function loadPopup({ url = 'https://app.example.com/page', queryError, removeErr
 
   return {
     elements,
+    document,
     ready: () => ready(),
     click: () => elements.clearBtn.click(),
-    result: () => ({ reloadedTab, removals, stored }),
+    toggleLanguage: () => elements.langBtn.click(),
+    result: () => ({ reloadedTab, removals, storedValues }),
   };
 }
 
@@ -74,7 +91,7 @@ test('envia a origem ativa e recarrega a aba após a remoção', async () => {
   assert.equal(popup.elements.clearBtn.disabled, false);
   await popup.click();
 
-  const { removals, reloadedTab, stored } = JSON.parse(JSON.stringify(popup.result()));
+  const { removals, reloadedTab, storedValues } = JSON.parse(JSON.stringify(popup.result()));
   assert.equal(popup.elements.siteInfo.textContent, 'https://app.example.com');
   assert.equal(removals.length, 6);
   for (const removal of removals) {
@@ -85,15 +102,13 @@ test('envia a origem ativa e recarrega a aba após a remoção', async () => {
     ['cookies', 'cache', 'cacheStorage', 'localStorage', 'serviceWorkers', 'indexedDB'],
   );
   assert.equal(reloadedTab, 7);
-  assert.deepEqual(stored, {
-    selectedOptions: {
-      cookies: true,
-      cache: true,
-      cacheStorage: true,
-      localStorage: true,
-      serviceWorkers: true,
-      indexedDB: true,
-    },
+  assert.deepEqual(storedValues.selectedOptions, {
+    cookies: true,
+    cache: true,
+    cacheStorage: true,
+    localStorage: true,
+    serviceWorkers: true,
+    indexedDB: true,
   });
   assert.equal(popup.elements.status.textContent, 'Dados removidos de https://app.example.com.');
 });
@@ -164,4 +179,34 @@ test('mantém o resultado visível quando a recarga falha', async () => {
   assert.equal(popup.elements.status.className, 'status warning');
   assert.notEqual(popup.result().removals.length, 0);
   assert.equal(popup.result().reloadedTab, undefined);
+});
+
+test('alterna toda a interface para inglês e persiste a escolha', async () => {
+  const popup = loadPopup();
+  await popup.ready();
+  popup.toggleLanguage();
+
+  assert.equal(popup.document.documentElement.lang, 'en');
+  assert.equal(popup.document.title, 'Clear Site Data');
+  assert.equal(popup.elements.title.textContent, 'Clear Site Data');
+  assert.equal(popup.elements.langBtn.textContent, 'PT');
+  assert.equal(popup.elements.optionsLegend.textContent, 'Data that will be removed');
+  assert.equal(popup.elements.labelCache.textContent, 'Browser cache');
+  assert.equal(popup.elements.cookieNote.textContent, 'Shared cookies may also be removed from related subdomains.');
+  assert.equal(popup.elements.clearBtn.textContent, 'Clear this site\'s data');
+  assert.deepEqual(JSON.parse(JSON.stringify(popup.result().storedValues)), { language: 'en' });
+
+  await popup.click();
+  assert.equal(popup.elements.status.textContent, 'Data removed from https://app.example.com.');
+});
+
+test('restaura o idioma salvo ao abrir o popup', async () => {
+  const popup = loadPopup({ savedLanguage: 'en' });
+  await popup.ready();
+
+  assert.equal(popup.document.documentElement.lang, 'en');
+  assert.equal(popup.elements.title.textContent, 'Clear Site Data');
+
+  await popup.click();
+  assert.equal(popup.elements.status.textContent, 'Data removed from https://app.example.com.');
 });

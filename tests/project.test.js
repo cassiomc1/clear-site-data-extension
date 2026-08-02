@@ -8,7 +8,7 @@ const manifest = JSON.parse(readFileSync(join(root, 'manifest.json'), 'utf8'));
 const popup = readFileSync(join(root, 'popup.html'), 'utf8');
 
 test('mantém apenas as permissões necessárias', () => {
-  assert.deepEqual(manifest.permissions.sort(), ['activeTab', 'browsingData']);
+  assert.deepEqual(manifest.permissions.sort(), ['activeTab', 'browsingData', 'storage']);
   assert.equal(manifest.host_permissions, undefined);
 });
 

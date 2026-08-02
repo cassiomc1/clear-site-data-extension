@@ -6,7 +6,8 @@
   "description": "Remove cookies, cache e armazenamentos do site aberto na aba atual.",
   "permissions": [
     "activeTab",
-    "browsingData"
+    "browsingData",
+    "storage"
   ],
   "action": {
     "default_popup": "popup.html",

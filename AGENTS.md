@@ -2,7 +2,7 @@
 
 ## Architecture
 
-`manifest.json` defines the Manifest V3 extension contract and `popup.js` implements the active-tab workflow. The extension must request only `activeTab` and `browsingData`.
+`manifest.json` defines the Manifest V3 extension contract and `popup.js` implements the active-tab workflow. The extension must request only `activeTab`, `browsingData` and `storage`.
 
 ## Validation
 

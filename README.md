@@ -1,89 +1,86 @@
-# Limpar Dados do Site
+# Clear Site Data
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-green.svg)](manifest.json)
 [![Chrome 96+](https://img.shields.io/badge/Chrome-96%2B-orange.svg)](https://www.google.com/chrome/)
 
-Extensão Chrome (Manifest V3) que limpa os dados armazenados pelo site da aba ativa
-(cookies, cache HTTP, Cache Storage, Local Storage, Service Workers e IndexedDB).
+Chrome extension (Manifest V3) that clears the data stored by the site in the active
+tab (cookies, HTTP cache, Cache Storage, Local Storage, Service Workers and IndexedDB).
 
-🌐 *[Read this documentation in English](README.en.md)*
+## Features
 
-## Funcionalidades
+- Automatically detects the origin (`protocol://domain:port`) of the active tab.
+- Lets you choose which data types to clear.
+- **Remembers the last selected options** between uses, speeding up repeated cleanups.
+- **Shows detailed cleanup progress** (e.g., "Removing browser cache... (2/6)").
+- Shows the result as soon as the removal finishes, without waiting for the page reload.
+- Reloads the tab after cleanup to apply the changes.
+- Uses temporary access only to the tab where the extension was opened.
 
-- Detecta automaticamente a origem (`protocolo://domínio:porta`) da aba ativa.
-- Permite escolher quais tipos de dados limpar.
-- **Interface bilíngue (PT/EN)**: botão no topo alterna todo o popup entre português e inglês, e a escolha é lembrada.
-- **Lembra as últimas opções selecionadas** entre usos, agilizando limpezas repetidas.
-- **Exibe o progresso detalhado** da limpeza (ex.: "Removendo cache do navegador... (2/6)").
-- Mostra o resultado assim que a remoção termina, sem esperar a recarga da página.
-- Recarrega a aba após a limpeza para aplicar as mudanças.
-- Usa acesso temporário somente à aba em que a extensão foi aberta.
+## How to install (developer mode)
 
-## Como instalar (modo desenvolvedor)
+1. Download this repository (or clone it with `git clone https://github.com/cassiomc1/extensao-cookie.git`).
+2. Go to `chrome://extensions`.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the project folder.
 
-1. Baixe este repositório (ou clone com `git clone https://github.com/cassiomc1/extensao-cookie.git`).
-2. Acesse `chrome://extensions`.
-3. Ative o **Modo do desenvolvedor**.
-4. Clique em **Carregar sem compactação** e selecione a pasta do projeto.
+## Notes about the data types
 
-## Observações sobre os tipos de dados
+Cache and storage are restricted to the current tab's origin using the `origins`
+filter of the
+[`chrome.browsingData`](https://developer.chrome.com/docs/extensions/reference/api/browsingData)
+API. Cookies are the exception described below. Only types that support the filter
+are used:
 
-O cache e os armazenamentos são restritos à origem da aba atual usando o filtro
-`origins` da API
-[`chrome.browsingData`](https://developer.chrome.com/docs/extensions/reference/api/browsingData).
-Os cookies são a exceção descrita abaixo. Apenas tipos com suporte ao filtro são usados:
-
-- **Cookies** — o Chrome os remove para todo o domínio registrável. Assim, cookies
-  compartilhados podem ser removidos também de outros subdomínios relacionados.
-- **Cache do navegador** (cache HTTP).
+- **Cookies** — Chrome removes them for the entire registrable domain. As a result,
+  shared cookies may also be removed from other related subdomains.
+- **Browser cache** (HTTP cache).
 - **Cache Storage** (Cache Storage API).
 - **Local Storage**
 - **Service Workers**
 - **IndexedDB**
 
-O `sessionStorage` não tem um tipo correspondente na API `browsingData` e não é
-removido pela extensão; ele é descartado quando a aba é fechada.
+`sessionStorage` has no corresponding type in the `browsingData` API and is not
+removed by the extension; it is discarded when the tab is closed.
 
-## Permissões
+## Permissions
 
-- `activeTab`: acesso temporário à URL da aba somente quando o usuário abre a extensão.
-- `browsingData`: remoção dos tipos de dados selecionados.
-- `storage`: salva localmente as últimas opções marcadas e o idioma escolhido para restaurá-los no próximo uso.
+- `activeTab`: temporary access to the tab's URL only when the user opens the extension.
+- `browsingData`: removal of the selected data types.
+- `storage`: locally saves the last checked options to restore them on the next use.
 
-A extensão requer Chrome 96 ou posterior para usar a interface assíncrona da API.
+The extension requires Chrome 96 or later to use the API's asynchronous interface.
 
-## Desempenho
+## Performance
 
-A remoção é feita um tipo de dado por vez, o que permite exibir o progresso em tempo
-real. O tempo total depende do volume de dados do site: o **cache do navegador** é o
-tipo mais lento, pois o Chrome varre todo o cache filtrando pela origem; **IndexedDB**
-de sites pesados também pode levar alguns segundos. Cookies, Local Storage e
-Cache Storage são praticamente instantâneos. Desmarque os tipos desnecessários para
-limpezas mais rápidas.
+Removal runs one data type at a time, which allows real-time progress to be shown.
+The total time depends on the site's data volume: **browser cache** is the slowest
+type, since Chrome scans the entire cache filtering by origin; **IndexedDB** from
+heavy sites can also take a few seconds. Cookies, Local Storage and Cache Storage
+are virtually instant. Uncheck unnecessary types for faster cleanups.
 
-## Estrutura do projeto
+## Project structure
 
 ```
-├── manifest.json   # Contrato da extensão (Manifest V3) e permissões
-├── popup.html      # Interface do popup
-├── popup.css       # Estilos do popup
-├── popup.js        # Lógica: detecção da aba, limpeza, progresso, i18n e persistência
-├── docs/           # Documentação técnica (arquitetura)
-└── tests/          # Testes automatizados (Node.js, sem dependências)
+├── manifest.json   # Extension contract (Manifest V3) and permissions
+├── popup.html      # Popup interface
+├── popup.css       # Popup styles
+├── popup.js        # Logic: tab detection, cleanup, progress and persistence
+├── docs/           # Technical documentation (architecture)
+└── tests/          # Automated tests (Node.js, no dependencies)
 ```
 
-## Desenvolvimento
+## Development
 
-Execute a validação local, sem instalar dependências:
+Run the local validation without installing dependencies:
 
 ```bash
 node --test
 node --check popup.js
 ```
 
-Depois carregue a extensão descompactada no Chrome e valide uma origem real.
+Then load the unpacked extension in Chrome and validate a real origin.
 
-## Licença
+## License
 
-Distribuída sob a [licença MIT](LICENSE).
+Distributed under the [MIT license](LICENSE).

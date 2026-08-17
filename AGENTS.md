@@ -1,4 +1,4 @@
-# Limpar Dados do Site extension guide
+# Clear Site Data extension guide
 
 ## Architecture
 

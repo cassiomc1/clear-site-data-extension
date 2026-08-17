@@ -1,32 +1,31 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Limpar Dados do Site</title>
+  <title>Clear Site Data</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <main class="container">
     <div class="header">
-      <h1 id="title">Limpar Dados do Site</h1>
-      <button type="button" id="langBtn" class="lang-btn" aria-label="Switch to English">EN</button>
+      <h1 id="title">Clear Site Data</h1>
     </div>
-    <p class="site-info" id="siteInfo" aria-live="polite">Carregando...</p>
+    <p class="site-info" id="siteInfo" aria-live="polite">Loading...</p>
 
     <fieldset class="options">
-      <legend id="optionsLegend">Dados que serão removidos</legend>
+      <legend id="optionsLegend">Data that will be removed</legend>
       <label><input type="checkbox" id="cookies" checked> <span id="labelCookies">Cookies</span></label>
-      <label><input type="checkbox" id="cache" checked> <span id="labelCache">Cache do navegador</span></label>
+      <label><input type="checkbox" id="cache" checked> <span id="labelCache">Browser cache</span></label>
       <label><input type="checkbox" id="cacheStorage" checked> <span id="labelCacheStorage">Cache Storage</span></label>
       <label><input type="checkbox" id="localStorage" checked> <span id="labelLocalStorage">Local Storage</span></label>
       <label><input type="checkbox" id="serviceWorkers" checked> <span id="labelServiceWorkers">Service Workers</span></label>
       <label><input type="checkbox" id="indexedDB" checked> <span id="labelIndexedDB">IndexedDB</span></label>
     </fieldset>
 
-    <p class="cookie-note" id="cookieNote">Cookies compartilhados podem ser removidos também de subdomínios relacionados.</p>
+    <p class="cookie-note" id="cookieNote">Shared cookies may also be removed from related subdomains.</p>
 
-    <button type="button" id="clearBtn" class="clear-btn" disabled>Limpar dados deste site</button>
+    <button type="button" id="clearBtn" class="clear-btn" disabled>Clear this site's data</button>
     <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></p>
   </main>
   <script src="popup.js"></script>

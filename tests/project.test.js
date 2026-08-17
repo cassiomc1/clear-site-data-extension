@@ -7,12 +7,12 @@ const root = join(__dirname, '..');
 const manifest = JSON.parse(readFileSync(join(root, 'manifest.json'), 'utf8'));
 const popup = readFileSync(join(root, 'popup.html'), 'utf8');
 
-test('mantém apenas as permissões necessárias', () => {
+test('keeps only the necessary permissions', () => {
   assert.deepEqual(manifest.permissions.sort(), ['activeTab', 'browsingData', 'storage']);
   assert.equal(manifest.host_permissions, undefined);
 });
 
-test('mantém o contrato entre manifesto, popup e JavaScript', () => {
+test('maintains the contract between manifest, popup and JavaScript', () => {
   assert.equal(manifest.action.default_popup, 'popup.html');
   assert.match(popup, /<script src="popup\.js"><\/script>/);
   assert.match(popup, /<link rel="stylesheet" href="popup\.css">/);
@@ -27,7 +27,6 @@ test('mantém o contrato entre manifesto, popup e JavaScript', () => {
     'localStorage',
     'serviceWorkers',
     'indexedDB',
-    'langBtn',
     'title',
     'optionsLegend',
     'cookieNote',
@@ -38,10 +37,10 @@ test('mantém o contrato entre manifesto, popup e JavaScript', () => {
     'labelServiceWorkers',
     'labelIndexedDB',
   ]) {
-    assert.equal(popup.match(new RegExp(`id="${id}"`, 'g'))?.length, 1, `id ausente ou duplicado: ${id}`);
+    assert.equal(popup.match(new RegExp(`id="${id}"`, 'g'))?.length, 1, `missing or duplicated id: ${id}`);
   }
 });
 
-test('mantém a ação bloqueada enquanto a origem é carregada', () => {
+test('keeps the action disabled while origin is being loaded', () => {
   assert.match(popup, /<button[^>]+id="clearBtn"[^>]+disabled>/);
 });

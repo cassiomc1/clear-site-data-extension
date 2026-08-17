@@ -1,36 +1,7 @@
 const OPTION_IDS = ['cookies', 'cache', 'cacheStorage', 'localStorage', 'serviceWorkers', 'indexedDB'];
 
 const I18N = {
-  pt: {
-    htmlLang: 'pt-BR',
-    langButton: 'EN',
-    langButtonLabel: 'Switch to English',
-    title: 'Limpar Dados do Site',
-    loading: 'Carregando...',
-    optionsLegend: 'Dados que serão removidos',
-    labels: {
-      cookies: 'Cookies',
-      cache: 'Cache do navegador',
-      cacheStorage: 'Cache Storage',
-      localStorage: 'Local Storage',
-      serviceWorkers: 'Service Workers',
-      indexedDB: 'IndexedDB',
-    },
-    cookieNote: 'Cookies compartilhados podem ser removidos também de subdomínios relacionados.',
-    clearButton: 'Limpar dados deste site',
-    identifyError: 'Não foi possível identificar o site.',
-    invalidUrl: 'URL inválida.',
-    notWebPage: 'Esta aba não é um site web.',
-    selectOne: 'Selecione ao menos um tipo de dado.',
-    removing: (label, step, total) => `Removendo ${label}... (${step}/${total})`,
-    removeError: 'Não foi possível remover os dados. Tente novamente.',
-    success: (origin) => `Dados removidos de ${origin}.`,
-    reloadError: 'Dados removidos, mas não foi possível recarregar a aba.',
-  },
   en: {
-    htmlLang: 'en',
-    langButton: 'PT',
-    langButtonLabel: 'Mudar para português',
     title: 'Clear Site Data',
     loading: 'Loading...',
     optionsLegend: 'Data that will be removed',
@@ -56,165 +27,97 @@ const I18N = {
 };
 
 const STORAGE_KEY = 'selectedOptions';
-const LANG_KEY = 'language';
-
-let currentLang = 'pt';
 
 function t() {
-  return I18N[currentLang];
+  return I18N.en;
 }
 
 function applyLanguage() {
-  const strings = t();
-  document.documentElement.lang = strings.htmlLang;
-  document.title = strings.title;
-
-  document.getElementById('title').textContent = strings.title;
-  const langBtn = document.getElementById('langBtn');
-  langBtn.textContent = strings.langButton;
-  langBtn.setAttribute('aria-label', strings.langButtonLabel);
-  document.getElementById('optionsLegend').textContent = strings.optionsLegend;
-  document.getElementById('labelCookies').textContent = strings.labels.cookies;
-  document.getElementById('labelCache').textContent = strings.labels.cache;
-  document.getElementById('labelCacheStorage').textContent = strings.labels.cacheStorage;
-  document.getElementById('labelLocalStorage').textContent = strings.labels.localStorage;
-  document.getElementById('labelServiceWorkers').textContent = strings.labels.serviceWorkers;
-  document.getElementById('labelIndexedDB').textContent = strings.labels.indexedDB;
-  document.getElementById('cookieNote').textContent = strings.cookieNote;
-  document.getElementById('clearBtn').textContent = strings.clearButton;
+  document.documentElement.lang = 'en';
+  document.title = t().title;
+  document.getElementById('title').textContent = t().title;
+  document.getElementById('siteInfo').textContent = t().loading;
+  document.getElementById('optionsLegend').textContent = t().optionsLegend;
+  document.getElementById('labelCookies').textContent = t().labels.cookies;
+  document.getElementById('labelCache').textContent = t().labels.cache;
+  document.getElementById('labelCacheStorage').textContent = t().labels.cacheStorage;
+  document.getElementById('labelLocalStorage').textContent = t().labels.localStorage;
+  document.getElementById('labelServiceWorkers').textContent = t().labels.serviceWorkers;
+  document.getElementById('labelIndexedDB').textContent = t().labels.indexedDB;
+  document.getElementById('cookieNote').textContent = t().cookieNote;
+  document.getElementById('clearBtn').textContent = t().clearButton;
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const siteInfo = document.getElementById('siteInfo');
-  const clearBtn = document.getElementById('clearBtn');
+async function getActiveTab() {
+  try {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tabs.length) {
+      throw new Error('No active tab found');
+    }
+    return tabs[0];
+  } catch (err) {
+    console.error('Failed to query active tab:', err);
+    const siteInfo = document.getElementById('siteInfo');
+    siteInfo.textContent = t().identifyError;
+    throw err;
+  }
+}
+
+function getOriginFromTab(tab) {
+  try {
+    const url = new URL(tab.url);
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      throw new Error('Not a web URL');
+    }
+    return url.origin;
+  } catch (err) {
+    console.error('Invalid URL in active tab:', err);
+    const siteInfo = document.getElementById('siteInfo');
+    siteInfo.textContent = t().identifyError;
+    throw err;
+  }
+}
+
+async function clear(dataTypes, origin) {
+  const labels = t().labels;
   const status = document.getElementById('status');
 
-  document.getElementById('langBtn').addEventListener('click', () => {
-    currentLang = currentLang === 'pt' ? 'en' : 'pt';
-    applyLanguage();
-    saveLanguage();
-  });
+  let failed = false;
 
-  await Promise.all([restoreLanguage(), restoreOptions()]);
-  applyLanguage();
+  for (const [step, id] of dataTypes.entries()) {
+    status.textContent = t().removing(labels[id], step + 1, dataTypes.length);
+    status.className = 'status progress';
 
-  let tab;
-  try {
-    [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  } catch (err) {
-    console.error('Falha ao consultar a aba ativa:', err);
-    siteInfo.textContent = t().identifyError;
-    clearBtn.disabled = true;
-    return;
-  }
-
-  if (!tab || !tab.url) {
-    siteInfo.textContent = t().identifyError;
-    clearBtn.disabled = true;
-    return;
-  }
-
-  let url;
-  try {
-    url = new URL(tab.url);
-  } catch (err) {
-    console.error('URL inválida na aba ativa:', err);
-    siteInfo.textContent = t().invalidUrl;
-    clearBtn.disabled = true;
-    return;
-  }
-
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-    siteInfo.textContent = t().notWebPage;
-    clearBtn.disabled = true;
-    return;
-  }
-
-  const origin = url.origin;
-
-  siteInfo.textContent = origin;
-  clearBtn.disabled = false;
-
-  clearBtn.addEventListener('click', async () => {
-    status.className = 'status';
-    clearBtn.disabled = true;
-
-    const dataToRemove = {
-      cookies: document.getElementById('cookies').checked,
-      cache: document.getElementById('cache').checked,
-      cacheStorage: document.getElementById('cacheStorage').checked,
-      localStorage: document.getElementById('localStorage').checked,
-      serviceWorkers: document.getElementById('serviceWorkers').checked,
-      indexedDB: document.getElementById('indexedDB').checked,
-    };
-
-    const selected = OPTION_IDS.filter((id) => dataToRemove[id]);
-
-    if (selected.length === 0) {
-      status.textContent = t().selectOne;
+    try {
+      await chrome.browsingData.remove({ origins: [origin] }, { [id]: true });
+    } catch (err) {
+      console.error(`Failed to remove ${id} from site:`, err);
+      status.textContent = t().removeError;
       status.className = 'status error';
-      clearBtn.disabled = false;
-      return;
+      failed = true;
+      break;
     }
+  }
 
-    saveOptions(dataToRemove);
-
-    // Remove um tipo por vez para exibir o progresso detalhado
-    for (let i = 0; i < selected.length; i += 1) {
-      const id = selected[i];
-      status.textContent = t().removing(t().labels[id], i + 1, selected.length);
-      try {
-        await chrome.browsingData.remove({ origins: [origin] }, { [id]: true });
-      } catch (err) {
-        console.error(`Falha ao remover ${id} do site:`, err);
-        status.textContent = t().removeError;
-        status.className = 'status error';
-        clearBtn.disabled = false;
-        return;
-      }
-    }
-
-    // Mostra o resultado imediatamente; a recarga ocorre em segundo plano
+  if (!failed) {
     status.textContent = t().success(origin);
     status.className = 'status success';
 
     try {
-      await chrome.tabs.reload(tab.id);
+      await chrome.tabs.reload();
     } catch (err) {
-      console.error('Falha ao recarregar a aba:', err);
+      console.error('Failed to reload tab:', err);
       status.textContent = t().reloadError;
       status.className = 'status warning';
     }
-  });
-});
+  }
+}
 
 function saveOptions(dataToRemove) {
   try {
     chrome.storage.local.set({ [STORAGE_KEY]: dataToRemove });
   } catch (err) {
-    console.error('Falha ao salvar as opções:', err);
-  }
-}
-
-function saveLanguage() {
-  try {
-    chrome.storage.local.set({ [LANG_KEY]: currentLang });
-  } catch (err) {
-    console.error('Falha ao salvar o idioma:', err);
-  }
-}
-
-async function restoreLanguage() {
-  let saved;
-  try {
-    saved = await chrome.storage.local.get(LANG_KEY);
-  } catch (err) {
-    console.error('Falha ao restaurar o idioma:', err);
-    return;
-  }
-
-  if (saved && I18N[saved[LANG_KEY]]) {
-    currentLang = saved[LANG_KEY];
+    console.error('Failed to save options:', err);
   }
 }
 
@@ -223,7 +126,7 @@ async function restoreOptions() {
   try {
     saved = await chrome.storage.local.get(STORAGE_KEY);
   } catch (err) {
-    console.error('Falha ao restaurar as opções:', err);
+    console.error('Failed to restore options:', err);
     return;
   }
 
@@ -236,3 +139,39 @@ async function restoreOptions() {
     }
   }
 }
+
+async function initializePopup() {
+  applyLanguage();
+  restoreOptions();
+
+  try {
+    const tab = await getActiveTab();
+    const origin = getOriginFromTab(tab);
+    const siteInfo = document.getElementById('siteInfo');
+    siteInfo.textContent = origin;
+    document.getElementById('clearBtn').disabled = false;
+
+    document.getElementById('clearBtn').addEventListener('click', async () => {
+      const dataTypes = OPTION_IDS.filter((id) => document.getElementById(id).checked);
+
+      if (!dataTypes.length) {
+        const status = document.getElementById('status');
+        status.textContent = t().selectOne;
+        status.className = 'status warning';
+        return;
+      }
+
+      const optionsState = Object.fromEntries(
+        OPTION_IDS
+          .filter((id) => !document.getElementById(id).checked)
+          .map((id) => [id, false]),
+      );
+      saveOptions(optionsState);
+      await clear(dataTypes, origin);
+    });
+  } catch (err) {
+    // Error already handled in getActiveTab or getOriginFromTab
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initializePopup);

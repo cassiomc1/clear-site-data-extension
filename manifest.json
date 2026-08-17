@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Limpar Dados do Site",
+  "name": "Clear Site Data",
   "version": "1.2.0",
   "minimum_chrome_version": "96",
-  "description": "Remove cookies, cache e armazenamentos do site aberto na aba atual.",
+  "description": "Remove cookies, cache and storage from the active tab.",
   "permissions": [
     "activeTab",
     "browsingData",
@@ -11,6 +11,6 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Limpar Dados do Site"
+    "default_title": "Clear Site Data"
   }
 }

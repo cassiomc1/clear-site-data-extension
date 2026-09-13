@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Clear Site Data",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "minimum_chrome_version": "96",
   "description": "Remove cookies, cache and storage from the active tab.",
   "permissions": [
@@ -9,8 +9,20 @@
     "browsingData",
     "storage"
   ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Clear Site Data"
+    "default_title": "Clear Site Data",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   }
 }

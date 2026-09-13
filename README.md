@@ -65,17 +65,14 @@ are virtually instant. Uncheck unnecessary types for faster cleanups.
 ├── manifest.json   # Extension contract (Manifest V3) and permissions
 ├── popup.html      # Popup interface
 ├── popup.css       # Popup styles
-├── popup.js        # Logic: tab detection, cleanup, progress and persistence
-├── docs/           # Technical documentation (architecture)
-└── tests/          # Automated tests (Node.js, no dependencies)
+└── popup.js        # Logic: tab detection, cleanup, progress and persistence
 ```
 
 ## Development
 
-Run the local validation without installing dependencies:
+Syntax-check the popup script without installing dependencies:
 
 ```bash
-node --test
 node --check popup.js
 ```
 

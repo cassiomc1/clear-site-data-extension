@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Clear Site Data",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "minimum_chrome_version": "96",
   "description": "Remove cookies, cache and storage from the active tab.",
   "permissions": [

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
   <title>Clear Site Data</title>
   <link rel="stylesheet" href="popup.css">
 </head>
@@ -11,7 +12,10 @@
     <div class="header">
       <h1 id="title">Clear Site Data</h1>
     </div>
-    <p class="site-info" id="siteInfo" aria-live="polite">Loading...</p>
+    <div class="site-row">
+      <img id="siteIcon" class="site-icon" alt="" width="16" height="16" hidden>
+      <p class="site-info" id="siteInfo" aria-live="polite">Loading...</p>
+    </div>
 
     <fieldset class="options">
       <legend id="optionsLegend">Data that will be removed</legend>
@@ -22,6 +26,12 @@
       <label><input type="checkbox" id="serviceWorkers" checked> <span id="labelServiceWorkers">Service Workers</span></label>
       <label><input type="checkbox" id="indexedDB" checked> <span id="labelIndexedDB">IndexedDB</span></label>
     </fieldset>
+
+    <div class="options-actions">
+      <button type="button" id="selectAllBtn" class="link-btn">Select all</button>
+      <span class="actions-separator" aria-hidden="true">·</span>
+      <button type="button" id="selectNoneBtn" class="link-btn">Clear selection</button>
+    </div>
 
     <p class="cookie-note" id="cookieNote">Shared cookies may also be removed from related subdomains.</p>
 
